@@ -49,28 +49,32 @@ function pascalCase(str: string) {
 
 function getType(field: Field, useIntersectionTypes = false) {
   let type: string;
-  if (field.relation && field.relation.type === "many") {
-    type = "any[]";
-  } else {
-    if (["integer", "bigInteger", "float", "decimal"].includes(field.type))
+
+  if (! field.relation) {
+    if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
       type = "number";
-    else if (["boolean"].includes(field.type)) type = "boolean";
-    else if (["json", "csv"].includes(field.type)) type = "unknown";
-    else type = "string";
+    } else if (["boolean"].includes(field.type)) {
+      type = "boolean";
+    } else if (["json", "csv"].includes(field.type)) {
+      type = "unknown";
+    } else {
+      type = "string";
+    }
   }
-  if (field.relation) {
+  else {
+    type = 'number'
+
     type += useIntersectionTypes ? " & " : " | ";
+
     type += field.relation.collection
       ? pascalCase(field.relation.collection)
       : "any";
-    if (field.relation.type === "many") type += "[]";
-  }
-  if (field.schema?.is_nullable) {
-    if (field.relation && useIntersectionTypes) {
-      type = `(${type}) | null`;
-    } else {
-      type += ` | null`;
+
+    if (field.relation.type === "many") {
+      type = `(${type})[]`;
     }
+
   }
+
   return type;
 }
