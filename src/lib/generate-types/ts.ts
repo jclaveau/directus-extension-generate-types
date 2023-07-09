@@ -29,7 +29,7 @@ export default async function generateTsTypes(
   });
 
   ret +=
-    "export type CustomDirectusTypes = {\n" +
+    "export type GeneratedDirectusTypes = {\n" +
     types.map((x) => `  ${x};`).join("\n") +
     "\n};";
 
