@@ -47,7 +47,7 @@ export default defineHook(async ({ action }, extCtx) => {
   }
 
   // Update the types when we start the server
-  saveTypescriptTypesToFile();
+  // saveTypescriptTypesToFile();
 
 
   const onChange: ActionHandler = async () => {
