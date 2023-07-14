@@ -54,7 +54,21 @@ function getType(field: Field, useIntersectionTypes = false) {
 
   // console.log('getType', field);
 
-  if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
+  if (field.meta?.options?.choices) {
+    const choices: string[] = field.meta.options.choices.map((choice: {value: string} | string) => {
+      if (typeof choice === 'string') {
+        return `'${choice}'`
+      }
+      else if (typeof choice === 'object' && choice !== null) {
+        return `'${choice.value}'`
+      }
+      else {
+        throw new Error('Unhandled choices structure: ' +  JSON.stringify(field, null, 2))
+      }
+    });
+    type = [...new Set(choices)].join(" | ");
+  }
+  else if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
     type = "number";
   } else if (["boolean"].includes(field.type)) {
     type = "boolean";

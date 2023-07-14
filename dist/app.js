@@ -2413,8 +2413,20 @@ function pascalCase(str) {
   return str.split(" ").flatMap((x) => x.split("_")).flatMap((y) => y.split("-")).map((x) => x.charAt(0).toUpperCase() + x.slice(1)).join("");
 }
 function getType$1(field, useIntersectionTypes = false) {
+  var _a, _b;
   let type;
-  if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
+  if ((_b = (_a = field.meta) == null ? void 0 : _a.options) == null ? void 0 : _b.choices) {
+    const choices = field.meta.options.choices.map((choice) => {
+      if (typeof choice === "string") {
+        return `'${choice}'`;
+      } else if (typeof choice === "object" && choice !== null) {
+        return `'${choice.value}'`;
+      } else {
+        throw new Error("Unhandled choices structure: " + JSON.stringify(field, null, 2));
+      }
+    });
+    type = [...new Set(choices)].join(" | ");
+  } else if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
     type = "number";
   } else if (["boolean"].includes(field.type)) {
     type = "boolean";
