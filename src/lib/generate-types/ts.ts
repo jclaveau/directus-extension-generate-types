@@ -20,7 +20,9 @@ export default async function generateTsTypes(
       if (field.meta?.interface?.startsWith("presentation-")) return;
       ret += "  ";
       ret += field.field.includes("-") ? `"${field.field}"` : field.field;
-      if (field.schema?.is_nullable) ret += "?";
+      if (field.schema?.is_nullable) { // ! field.meta?.required ?
+        ret += "?"
+      };
       ret += ": ";
       ret += getType(field, useIntersectionTypes);
       ret += ";\n";
@@ -50,20 +52,19 @@ function pascalCase(str: string) {
 function getType(field: Field, useIntersectionTypes = false) {
   let type: string;
 
-  if (! field.relation) {
-    if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
-      type = "number";
-    } else if (["boolean"].includes(field.type)) {
-      type = "boolean";
-    } else if (["json", "csv"].includes(field.type)) {
-      type = "unknown";
-    } else {
-      type = "string";
-    }
-  }
-  else {
-    type = 'number'
+  // console.log('getType', field);
 
+  if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
+    type = "number";
+  } else if (["boolean"].includes(field.type)) {
+    type = "boolean";
+  } else if (["json", "csv"].includes(field.type)) {
+    type = "unknown";
+  } else {
+    type = "string";
+  }
+
+  if (field.relation) {
     type += useIntersectionTypes ? " & " : " | ";
 
     type += field.relation.collection
@@ -73,7 +74,6 @@ function getType(field: Field, useIntersectionTypes = false) {
     if (field.relation.type === "many") {
       type = `(${type})[]`;
     }
-
   }
 
   return type;
