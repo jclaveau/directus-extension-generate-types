@@ -55,18 +55,25 @@ function getType(field: Field, useIntersectionTypes = false) {
   // console.log('getType', field);
 
   if (field.meta?.options?.choices) {
-    const choices: string[] = field.meta.options.choices.map((choice: {value: string} | string) => {
+    const choices: string[] = field.meta.options.choices.map((choice: {value: string | null} | string) => {
       if (typeof choice === 'string') {
-        return `'${choice}'`
+        return choice
       }
       else if (typeof choice === 'object' && choice !== null) {
-        return `'${choice.value}'`
+        return choice.value
       }
       else {
         throw new Error('Unhandled choices structure: ' +  JSON.stringify(field, null, 2))
       }
     });
-    type = [...new Set(choices)].join(" | ");
+    type = [...new Set(choices)]
+      .map((choice: string | null) => {
+        if (choice === null) {
+          return 'null'
+        } else {
+          return '"' + choice.replaceAll('\\', '\\\\') + '"'
+        }
+      }).join(" | ");
   }
   else if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
     type = "number";

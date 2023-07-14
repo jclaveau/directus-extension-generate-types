@@ -17,12 +17,11 @@ async function generateTsTypes(collections, useIntersectionTypes = false) {
     ret += `export type ${typeName} = {
 `;
     collection.fields.forEach((field) => {
-      var _a, _b, _c;
-      if ((_b = (_a = field.meta) == null ? void 0 : _a.interface) == null ? void 0 : _b.startsWith("presentation-"))
+      if (field.meta?.interface?.startsWith("presentation-"))
         return;
       ret += "  ";
       ret += field.field.includes("-") ? `"${field.field}"` : field.field;
-      if ((_c = field.schema) == null ? void 0 : _c.is_nullable) {
+      if (field.schema?.is_nullable) {
         ret += "?";
       }
       ret += ": ";
@@ -39,19 +38,24 @@ function pascalCase(str) {
   return str.split(" ").flatMap((x) => x.split("_")).flatMap((y) => y.split("-")).map((x) => x.charAt(0).toUpperCase() + x.slice(1)).join("");
 }
 function getType(field, useIntersectionTypes = false) {
-  var _a, _b;
   let type;
-  if ((_b = (_a = field.meta) == null ? void 0 : _a.options) == null ? void 0 : _b.choices) {
+  if (field.meta?.options?.choices) {
     const choices = field.meta.options.choices.map((choice) => {
       if (typeof choice === "string") {
-        return `'${choice}'`;
+        return choice;
       } else if (typeof choice === "object" && choice !== null) {
-        return `'${choice.value}'`;
+        return choice.value;
       } else {
         throw new Error("Unhandled choices structure: " + JSON.stringify(field, null, 2));
       }
     });
-    type = [...new Set(choices)].join(" | ");
+    type = [...new Set(choices)].map((choice) => {
+      if (choice === null) {
+        return "null";
+      } else {
+        return '"' + choice.replaceAll("\\", "\\\\") + '"';
+      }
+    }).join(" | ");
   } else if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
     type = "number";
   } else if (["boolean"].includes(field.type)) {
@@ -96,11 +100,10 @@ async function gatherCollectionsData(rawCollections, rawFields, rawRelations) {
       delete collections[key];
   });
   rawRelations.forEach((relation) => {
-    var _a, _b;
-    const oneField = (_a = collections[relation.meta.one_collection]) == null ? void 0 : _a.fields.find(
+    const oneField = collections[relation.meta.one_collection]?.fields.find(
       (field) => field.field === relation.meta.one_field
     );
-    const manyField = (_b = collections[relation.meta.many_collection]) == null ? void 0 : _b.fields.find(
+    const manyField = collections[relation.meta.many_collection]?.fields.find(
       (field) => field.field === relation.meta.many_field
     );
     if (oneField)
@@ -148,7 +151,6 @@ var e0 = defineHook(async ({ action }, extCtx) => {
       });
     });
   };
-  saveTypescriptTypesToFile();
   const onChange = async () => {
     saveTypescriptTypesToFile();
   };

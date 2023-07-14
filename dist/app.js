@@ -2160,42 +2160,38 @@ function download(text, filename, type = "text/plain") {
 function useClipboard() {
   const { t } = useI18n();
   const isCopySupported = computed(() => {
-    var _a;
-    return !!((_a = navigator == null ? void 0 : navigator.clipboard) == null ? void 0 : _a.writeText);
+    return !!navigator?.clipboard?.writeText;
   });
   const isPasteSupported = computed(() => {
-    var _a;
-    return !!((_a = navigator == null ? void 0 : navigator.clipboard) == null ? void 0 : _a.readText);
+    return !!navigator?.clipboard?.readText;
   });
   return { isCopySupported, isPasteSupported, copyToClipboard, pasteFromClipboard };
   async function copyToClipboard(value, notificationStore, message) {
-    var _a, _b, _c;
     try {
-      await ((_a = navigator == null ? void 0 : navigator.clipboard) == null ? void 0 : _a.writeText(value));
+      await navigator?.clipboard?.writeText(value);
       notificationStore.add({
-        title: (_b = message == null ? void 0 : message.success) != null ? _b : t("copy_raw_value_success")
+        title: message?.success ?? t("copy_raw_value_success")
       });
       return true;
     } catch (err) {
       notificationStore.add({
         type: "error",
-        title: (_c = message == null ? void 0 : message.fail) != null ? _c : t("copy_raw_value_fail")
+        title: message?.fail ?? t("copy_raw_value_fail")
       });
       return false;
     }
   }
   async function pasteFromClipboard(notificationStore, message) {
-    var _a, _b, _c;
     try {
-      const pasteValue = await ((_a = navigator == null ? void 0 : navigator.clipboard) == null ? void 0 : _a.readText());
+      const pasteValue = await navigator?.clipboard?.readText();
       notificationStore.add({
-        title: (_b = message == null ? void 0 : message.success) != null ? _b : t("paste_raw_value_success")
+        title: message?.success ?? t("paste_raw_value_success")
       });
       return pasteValue;
     } catch (err) {
       notificationStore.add({
         type: "error",
-        title: (_c = message == null ? void 0 : message.fail) != null ? _c : t("paste_raw_value_fail")
+        title: message?.fail ?? t("paste_raw_value_fail")
       });
       return null;
     }
@@ -2342,11 +2338,10 @@ async function gatherCollectionsData(rawCollections, rawFields, rawRelations) {
       delete collections[key];
   });
   rawRelations.forEach((relation) => {
-    var _a, _b;
-    const oneField = (_a = collections[relation.meta.one_collection]) == null ? void 0 : _a.fields.find(
+    const oneField = collections[relation.meta.one_collection]?.fields.find(
       (field) => field.field === relation.meta.one_field
     );
-    const manyField = (_b = collections[relation.meta.many_collection]) == null ? void 0 : _b.fields.find(
+    const manyField = collections[relation.meta.many_collection]?.fields.find(
       (field) => field.field === relation.meta.many_field
     );
     if (oneField)
@@ -2391,12 +2386,11 @@ async function generateTsTypes(collections, useIntersectionTypes = false) {
     ret += `export type ${typeName} = {
 `;
     collection.fields.forEach((field) => {
-      var _a, _b, _c;
-      if ((_b = (_a = field.meta) == null ? void 0 : _a.interface) == null ? void 0 : _b.startsWith("presentation-"))
+      if (field.meta?.interface?.startsWith("presentation-"))
         return;
       ret += "  ";
       ret += field.field.includes("-") ? `"${field.field}"` : field.field;
-      if ((_c = field.schema) == null ? void 0 : _c.is_nullable) {
+      if (field.schema?.is_nullable) {
         ret += "?";
       }
       ret += ": ";
@@ -2413,19 +2407,24 @@ function pascalCase(str) {
   return str.split(" ").flatMap((x) => x.split("_")).flatMap((y) => y.split("-")).map((x) => x.charAt(0).toUpperCase() + x.slice(1)).join("");
 }
 function getType$1(field, useIntersectionTypes = false) {
-  var _a, _b;
   let type;
-  if ((_b = (_a = field.meta) == null ? void 0 : _a.options) == null ? void 0 : _b.choices) {
+  if (field.meta?.options?.choices) {
     const choices = field.meta.options.choices.map((choice) => {
       if (typeof choice === "string") {
-        return `'${choice}'`;
+        return choice;
       } else if (typeof choice === "object" && choice !== null) {
-        return `'${choice.value}'`;
+        return choice.value;
       } else {
         throw new Error("Unhandled choices structure: " + JSON.stringify(field, null, 2));
       }
     });
-    type = [...new Set(choices)].join(" | ");
+    type = [...new Set(choices)].map((choice) => {
+      if (choice === null) {
+        return "null";
+      } else {
+        return '"' + choice.replaceAll("\\", "\\\\") + '"';
+      }
+    }).join(" | ");
   } else if (["integer", "bigInteger", "float", "decimal"].includes(field.type)) {
     type = "number";
   } else if (["boolean"].includes(field.type)) {
