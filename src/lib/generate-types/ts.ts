@@ -86,14 +86,17 @@ function getType(field: Field, useIntersectionTypes = false) {
   }
 
   if (field.relation) {
-    type += useIntersectionTypes ? " & " : " | ";
+    const foreignKeyType = 'string | number' // DefaultItem forces string | number as type for foreignkeys instead of the true type of the id
 
-    type += field.relation.collection
+    const itemType = field.relation.collection
       ? pascalCase(field.relation.collection)
-      : "any";
+      : "any"
 
     if (field.relation.type === "many") {
-      type = `(${type})[]`;
+      type = `(${foreignKeyType})[] ${useIntersectionTypes ? "&" : "|"} (${itemType})[]`;
+    }
+    else {
+      type = `${foreignKeyType} ${useIntersectionTypes ? "&" : "|"} ${itemType}`;
     }
   }
 
