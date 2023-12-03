@@ -1,19 +1,19 @@
 {
-  "name": "directus-extension-generate-types",
-  "version": "0.4.2",
-  "license": "MPL-2.0",
-  "author": {
-    "name": "Malte Jürgens",
-    "email": "maltejur@dismail.de",
-    "url": "https://github.com/maltejur"
-  },
-  "contributors": [
-    {
-      "name": "Jean Claveau",
-      "email": "jean.claveau@gmail.com",
-      "url": "https://github.com/jclaveau"
-    }
-  ],
+	"name": "directus-extension-generate-types",
+	"version": "0.4.2",
+	"license": "MPL-2.0",
+	"author": {
+		"name": "Malte Jürgens",
+		"email": "maltejur@dismail.de",
+		"url": "https://github.com/maltejur"
+	},
+	"contributors": [
+		{
+			"name": "Jean Claveau",
+			"email": "jean.claveau@gmail.com",
+			"url": "https://github.com/jclaveau"
+		}
+	],
 	"type": "module",
 	"description": "Generate types for use in TypeScript, Python or for OpenAPI usage",
 	"icon": "extension",
@@ -29,7 +29,7 @@
 			"api": "dist/api.js"
 		},
 		"host": "^10.1.5",
-    "hidden": false,
+		"hidden": false,
 		"entries": [
 			{
 				"type": "module",
@@ -43,25 +43,24 @@
 			}
 		]
 	},
-  "scripts": {
+	"scripts": {
 		"build": "directus-extension build",
 		"dev": "directus-extension build -w --no-minify",
 		"dev:project": "sh ./dev.sh",
 		"link": "directus-extension link",
-		"add": "directus-extension add",
-    "prepare": "directus-extension build"
+		"add": "directus-extension add"
 	},
 	"devDependencies": {
 		"@directus/extensions-sdk": "10.1.5",
 		"@types/node": "^20.4.0",
-    "@types/prismjs": "^1.26.0",
-    "axios": "^0.27.2",
-    "sass": "^1.55.0",
+		"@types/prismjs": "^1.26.0",
+		"axios": "^0.27.2",
+		"sass": "^1.55.0",
 		"typescript": "^5.1.6",
 		"vue": "^3.3.4"
 	},
-  "dependencies": {
-    "@directus/shared": "^9.18.1",
-    "prismjs": "^1.29.0"
-  }
+	"dependencies": {
+		"@directus/shared": "^9.18.1",
+		"prismjs": "^1.29.0"
+	}
 }

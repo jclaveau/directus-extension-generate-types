@@ -1,6 +1,10 @@
 .DS_Store
 node_modules
-dist
+# TODO reenable it with (seems to need a rollup plugin for Typescript when run from "prepare". Are dev dependencies installed?)
+# [RollupError] Unexpected token (Note that you need plugins to import files that are not JavaScript)
+# yarn-install: 44: } as ModuleConfig;
+# yarn-install:       ^# "prepare": "directus-extension build"
+# dist
 yarn-error.log
 /test
 /dev
