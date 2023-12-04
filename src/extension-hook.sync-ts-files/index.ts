@@ -47,6 +47,8 @@ export default defineHook(async ({ action }, extCtx) => {
   }
 
   // Update the types when we start the server
+  // !!! Only enable it during dev time to avoid
+  // error: select "collection", "singleton", "note", "sort_field", "accountability" from "directus_collections" - relation "directus_collections" does not exist
   // saveTypescriptTypesToFile();
 
 
